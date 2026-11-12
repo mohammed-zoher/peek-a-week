@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 7 — Peek-a-Week 🍼</title>
+<style>
+  :root {
+    --cream: #FDF6EE;
+    --card-bg: #FFFCF8;
+    --warm-brown: #5C3D2E;
+    --muted: #8C7060;
+    --accent: #C4704A;
+    --accent-light: #F0D9CC;
+    --accent-pale: #FAF0EA;
+    --border: #EAD9CC;
+    --shadow: rgba(92,61,46,0.08);
+    --green: #5A7A5A;
+    --green-pale: #EBF2EB;
+    --blue: #4A6A8A;
+    --blue-pale: #E8F0F7;
+    --gold: #A07A3A;
+    --gold-pale: #F5EDD8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--cream);
+    font-family: Georgia, 'Times New Roman', serif;
+    color: var(--warm-brown);
+    min-height: 100vh;
+  }
+
+  .header {
+    background: var(--warm-brown);
+    background-image: radial-gradient(ellipse at 70% 50%, rgba(196,112,74,0.3) 0%, transparent 70%);
+    padding: 52px 24px 44px;
+    text-align: center;
+    color: var(--cream);
+  }
+  .header .week-label {
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent-light); margin-bottom: 12px;
+  }
+  .header h1 {
+    font-size: clamp(26px, 5vw, 40px); font-weight: normal;
+    letter-spacing: -0.01em; color: #FDF6EE; margin-bottom: 10px;
+  }
+  .header .subtitle {
+    font-style: italic; font-size: 15px;
+    color: rgba(253,246,238,0.6); max-width: 400px; margin: 0 auto;
+  }
+  .back-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--accent-light); text-decoration: none; padding: 14px 24px 0;
+  }
+  .back-link:hover { color: white; }
+
+  .counter {
+    text-align: center; font-size: 11px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--accent); padding: 28px 24px 10px;
+    scroll-margin-top: 16px;
+  }
+  .progress-wrap {
+    max-width: min(560px, 94%); margin: 0 auto 24px;
+    height: 3px; background: var(--border); border-radius: 2px; overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.35s ease;
+  }
+
+  .card-wrap { display: flex; justify-content: center; padding: 0 24px; }
+  .card {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 18px; box-shadow: 0 4px 28px var(--shadow);
+    width: min(560px, 100%); overflow: hidden; animation: slideIn 0.3s ease both;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-header {
+    padding: 26px 28px 20px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: flex-start; gap: 16px;
+  }
+  .card-icon {
+    font-size: 22px; background: var(--accent-pale); border-radius: 12px;
+    padding: 10px 12px; line-height: 1; flex-shrink: 0;
+  }
+  .card-title { font-size: 19px; font-weight: bold; color: var(--warm-brown); margin-bottom: 3px; line-height: 1.2; }
+  .card-subtitle { font-style: italic; font-size: 13px; color: var(--muted); line-height: 1.4; }
+  .card-body { padding: 24px 28px 28px; }
+
+  .stat-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+  .stat-pill {
+    background: var(--accent-pale); border: 1px solid var(--accent-light);
+    border-radius: 20px; padding: 6px 14px; font-size: 13px; color: var(--warm-brown);
+  }
+  .stat-pill strong { color: var(--accent); }
+
+  ul { list-style: none; padding: 0; }
+  ul li {
+    padding: 10px 0 10px 20px; position: relative;
+    font-size: 14px; line-height: 1.65; border-bottom: 1px solid var(--border);
+    color: var(--warm-brown);
+  }
+  ul li:last-child { border-bottom: none; }
+  ul li::before {
+    content: '·'; position: absolute; left: 4px;
+    color: var(--accent); font-size: 18px; line-height: 1.4;
+  }
+
+  ol.steps { list-style: none; padding: 0; counter-reset: steps; }
+  ol.steps li {
+    padding: 10px 0 10px 42px; position: relative; font-size: 14px;
+    line-height: 1.65; border-bottom: 1px solid var(--border); counter-increment: steps;
+  }
+  ol.steps li:last-child { border-bottom: none; }
+  ol.steps li::before {
+    content: counter(steps); position: absolute; left: 0; top: 10px;
+    width: 26px; height: 26px; background: var(--accent); color: white;
+    border-radius: 50%; font-size: 12px; display: flex;
+    align-items: center; justify-content: center; font-family: Georgia, serif;
+  }
+
+  .info-box { border-radius: 10px; padding: 14px 16px; font-size: 13.5px; line-height: 1.6; margin-top: 14px; }
+  .info-box strong { display: block; margin-bottom: 4px; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; }
+  .info-box.warm  { background: var(--accent-pale); border: 1px solid var(--accent-light); color: var(--warm-brown); }
+  .info-box.warm strong { color: var(--accent); }
+  .info-box.green { background: var(--green-pale); border: 1px solid #C2D9C2; color: #2E4A2E; }
+  .info-box.green strong { color: var(--green); }
+  .info-box.blue  { background: var(--blue-pale); border: 1px solid #C0D0DF; color: #1E3045; }
+  .info-box.blue strong { color: var(--blue); }
+  .info-box.amber { background: var(--gold-pale); border: 1px solid #DEC89A; color: #4A3010; }
+  .info-box.amber strong { color: var(--gold); }
+
+  .section-label {
+    font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--muted); margin: 18px 0 10px;
+  }
+  .section-label:first-child { margin-top: 0; }
+
+  .diff-row { display: flex; gap: 10px; margin-top: 14px; margin-bottom: 14px; }
+  .diff-col { flex: 1; border-radius: 10px; padding: 12px 14px; font-size: 13px; line-height: 1.55; }
+  .diff-col.left  { background: var(--blue-pale); border: 1px solid #C0D0DF; color: #1E3045; }
+  .diff-col.right { background: var(--gold-pale); border: 1px solid #DEC89A; color: #4A3010; }
+  .diff-col strong { display: block; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
+  .diff-col.left strong { color: var(--blue); }
+  .diff-col.right strong { color: var(--gold); }
+
+  .nav {
+    display: flex; justify-content: center; align-items: center;
+    gap: 12px; padding: 24px 24px 10px;
+  }
+  .btn {
+    font-family: Georgia, serif; font-size: 14px; padding: 10px 28px;
+    border-radius: 24px; cursor: pointer; transition: all 0.18s ease; border: 1.5px solid var(--accent);
+  }
+  .btn-prev { background: transparent; color: var(--accent); }
+  .btn-prev:hover:not(:disabled) { background: var(--accent); color: white; transform: translateY(-1px); }
+  .btn-next { background: var(--accent); color: white; }
+  .btn-next:hover:not(:disabled) { background: #A85A38; transform: translateY(-1px); }
+  .btn:disabled { opacity: 0.3; cursor: default; transform: none; }
+
+  .dots { display: flex; justify-content: center; gap: 7px; padding: 12px 24px 32px; flex-wrap: wrap; }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--border);
+    cursor: pointer; transition: all 0.2s ease; border: none; padding: 0;
+  }
+  .dot.active { background: var(--accent); transform: scale(1.3); }
+
+  footer {
+    text-align: center; font-style: italic; font-size: 11px;
+    color: var(--muted); padding: 0 24px 36px;
+  }
+
+  @media (max-width: 500px) {
+    .card-header { padding: 20px 18px 16px; }
+    .card-body { padding: 18px 18px 22px; }
+    .btn { padding: 9px 20px; font-size: 13px; }
+    .diff-row { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a class="back-link" href="index.html">← All weeks</a>
+  <div class="week-label">Week 7</div>
+  <h1>Routines Begin</h1>
+  <p class="subtitle">A gentle daily pattern, longer nights, and crying starts to ease</p>
+</div>
+
+<div class="counter" id="counter">Card 1 of 7</div>
+<div class="progress-wrap"><div class="progress-bar" id="progressBar" style="width:14.28%"></div></div>
+
+<div class="card-wrap"><div class="card" id="card"></div></div>
+
+<div class="nav">
+  <button class="btn btn-prev" id="prevBtn" onclick="navigate(-1)" disabled>← Prev</button>
+  <button class="btn btn-next" id="nextBtn" onclick="navigate(1)">Next →</button>
+</div>
+<div class="dots" id="dots"></div>
+
+<footer><em>Source: Your Baby Week by Week</em> — all content sourced directly from the book</footer>
+
+<script>
+const cards = [
+      {
+        icon: '🗓️', title: "Starting a Gentle Routine", subtitle: "The earliest point to start thinking about a daily pattern",
+        content: `
+          <ul>
+            <li>This is about the earliest you can start thinking about a routine. Until now your baby has been too young for any timetable, and his cries for milk and cuddles have needed to be met pretty much on demand.</li>
+            <li>It's still too soon for a regimented feeding and sleeping regime, but you can gradually introduce a daily pattern.</li>
+            <li>From now on hunger is no longer the main reason your baby cries. He'll increasingly cry for other reasons, such as tiredness and even boredom, making his needs more confusing.</li>
+          </ul>
+          <div class="diff-row">
+            <div class="diff-col left">
+              <strong>Why a gentle routine helps</strong>
+              It helps you recognise whether your baby is due for a feed or a sleep, taking a lot of the guesswork out. You spend less time offering food when he's not hungry, and you're more likely to get him down before he's overtired and fractious.
+            </div>
+            <div class="diff-col right">
+              <strong>The downside</strong>
+              You can get so hung up on it that you overlook what your baby is telling you and you all end up miserable. There's even a risk of not feeding him enough if you stick to a rigid timetable and don't listen to his cries for milk.
+            </div>
+          </div>
+          <div class="info-box blue">
+            <strong>Not for everyone</strong>
+            Plenty of parents prefer to simply observe their baby's signals and respond instinctively. Either way, the key is to respond to your baby and stay sensitive to what he's telling you.
+          </div>
+        `
+      },
+      {
+        icon: '😴', title: "Sleep", subtitle: "Focusing on longer nights",
+        content: `
+          <div class="stat-row">
+            <div class="stat-pill">Total sleep: <strong>14–17 hours/day</strong></div>
+            <div class="stat-pill">Daytime naps: <strong>at least 3 hours total</strong></div>
+          </div>
+          <ul>
+            <li><strong>Pattern:</strong> sleeps more at night than during the day.</li>
+            <li>The textbook routine many parents aim for is 12 hours of uninterrupted night sleep plus around two to three hours of daytime napping. A few babies get there by 16 weeks, but many take up to a year or longer.</li>
+            <li>Hopefully your baby is already sleeping up to four or five hours at night. If he still seems to have his days and nights confused, this needs addressing, as it's an essential step towards sleeping through the night.</li>
+          </ul>
+          <div class="section-label">Sleeping for longer at night</div>
+          <ul>
+            <li>Keep things very low key at night: dim lighting and no playing.</li>
+            <li>During the day, don't let him nap for longer than three hours at a time. Total daytime napping shouldn't add up to more than about four hours.</li>
+          </ul>
+          <div class="info-box warm">
+            <strong>Get out in the daylight</strong>
+            A 2004 study in the Journal of Sleep Research found that babies aged six, nine and twelve weeks who were good night sleepers had double the daylight between 12 pm and 4 pm compared with poor night sleepers. Researchers thought daylight helps regulate melatonin, which influences your baby's understanding of night and day. A pram walk for fresh air during the day is a tried-and-tested method.
+          </div>
+        `
+      },
+      {
+        icon: '💛', title: "Crying", subtitle: "The evening fussiness starts to ease",
+        content: `
+          <div class="stat-row">
+            <div class="stat-pill">Crying per day: <strong>45 min – 4.5 hours</strong></div>
+          </div>
+          <ul>
+            <li>Your baby's crying should begin to settle from this week. You'll notice a marked, though gradual, decline in his unexplained evening fussiness.</li>
+            <li>Even colicky babies will soon show the first signs of improvement.</li>
+            <li>This trend should continue for the next six weeks or so as your baby matures and feels less overwhelmed by the world.</li>
+          </ul>
+          <div class="info-box amber">
+            <strong>At your wits' end?</strong>
+            If your baby is still crying non-stop, get some help from a friend, relative or healthcare professional.
+          </div>
+        `
+      },
+      {
+        icon: '🤱', title: "Breastfeeding Routine", subtitle: "Spotting and fixing the 'disorganised' periods",
+        content: `
+          <div class="stat-row">
+            <div class="stat-pill">Daily total: <strong>720–960 ml / 25–33 oz</strong></div>
+            <div class="stat-pill">Per feed: <strong>up to 150 ml / 5 oz</strong></div>
+            <div class="stat-pill">Feeds per day: <strong>6–9</strong></div>
+          </div>
+          <ul>
+            <li>A feeding routine helps you tell when your baby is hungry versus crying from overtiredness, and makes it easier in weeks to come to tweak it so he eventually stops feeding at night.</li>
+            <li>Continuing from week five: the aim is three hours from the start of one feed to the start of the next, and four hours at night.</li>
+            <li>With breastfeeding this takes longer than with a bottle, because your milk has to adapt to the new timetable. Allow a few weeks.</li>
+          </ul>
+          <ol class="steps">
+            <li>Make sure your baby is getting enough rich hind milk.</li>
+            <li>For three days, write down when he breastfeeds. A pattern will likely emerge.</li>
+            <li>Identify a 'disorganised' period and tackle it (below).</li>
+          </ol>
+          <div class="section-label">Morning snacking</div>
+          <ul>
+            <li>Several small feeds close together, say 6.30, 7 and 8.30 am. Often happens when you wake engorged and give a quick feed from both sides, so he misses the fatty hind milk and gets hungry again quickly.</li>
+            <li><strong>Try:</strong> feed from one breast, and express a little from the other if uncomfortable.</li>
+          </ul>
+          <div class="section-label">Afternoon indecision</div>
+          <ul>
+            <li>He asks to be fed but doesn't seem hungry. Usually he's actually tired, overtired, and thinks he needs comforting.</li>
+            <li><strong>Try:</strong> feed him plenty at the previous feed, then settle him before he becomes irritable.</li>
+          </ul>
+          <div class="section-label">Insatiable evening appetite</div>
+          <ul>
+            <li>Very common. Your milk supply is at its lowest at the end of the day when you're tired.</li>
+            <li><strong>Try:</strong> drink plenty of fluids in the afternoon and relax in the late afternoon.</li>
+            <li>Some mums express excess milk in the morning to give in the evening; others give a 'top-up' bottle of formula. Purists argue against this, and in most cases supply catches up over the next few weeks, but a few shortcuts won't upset the balance too much.</li>
+          </ul>
+          <div class="section-label">Night wakings you can set your clock by</div>
+          <ul>
+            <li>Waking at the same time each night is generally habit rather than hunger.</li>
+            <li>If he's been fed within the last couple of hours, think about comforting rather than feeding. If he's adamant he's hungry, give in, as he's still very young.</li>
+          </ul>
+          <div class="info-box green">
+            <strong>Be guided by your baby</strong>
+            However keen you are on a pattern, if he seems particularly hungry, he probably is. Feed him as much as he wants.
+          </div>
+        `
+      },
+      {
+        icon: '🍼', title: "Bottle-feeding & Listening to Your Baby", subtitle: "A 3-hour day, 4-hour night schedule",
+        content: `
+          <ul>
+            <li>A routine is easier with bottle-feeding: formula is digested more slowly so your baby can wait longer, and you can measure exactly how much he takes.</li>
+            <li>If he's been gaining weight satisfactorily, aim to feed every three hours in the day (start to start) and four hours at night.</li>
+          </ul>
+          <div class="info-box blue">
+            <strong>Example schedule</strong>
+            7 am · 10 am · 1 pm · 4 pm · 7 pm · 11 pm · 3 am · then 7 am again
+          </div>
+          <div class="info-box warm">
+            <strong>How much per feed</strong>
+            Add up how many ounces he drinks in 24 hours, then divide by seven.
+          </div>
+          <ul>
+            <li>It takes a few days for him to adjust, but he'll gradually adapt and his needs become easier to anticipate.</li>
+            <li>Even on a schedule there will be extra-hungry times and days. He knows better than anyone how much milk he should have.</li>
+          </ul>
+          <div class="section-label">Why not to be too strict</div>
+          <ul>
+            <li>He may be having a growth spurt and need more milk.</li>
+            <li>It could be a hot day, making him more thirsty.</li>
+            <li>He may be unwell, which can make him want lots of little feeds instead of a few big ones.</li>
+            <li>If you're breastfeeding, you may be short of milk if you're tired, dehydrated or unwell, so he'll demand extra feeds to compensate.</li>
+          </ul>
+        `
+      },
+      {
+        icon: '🩹', title: "Nappies & Stool Colours", subtitle: "What's normal, and what to call the GP about",
+        content: `
+          <div class="stat-row">
+            <div class="stat-pill">Wet nappies: <strong>4–8 per day</strong></div>
+            <div class="stat-pill">Dirty nappies: <strong>0–6 per day</strong></div>
+          </div>
+          <div class="info-box green">
+            <strong>Mostly false alarms</strong>
+            Stools vary a great deal in colour. Pretty much any shade of brown or even green is considered healthy.
+          </div>
+          <div class="section-label">Green stools</div>
+          <ul>
+            <li>More likely if breastfeeding and your baby is getting too much fore milk and not enough hind milk. Fore milk is more dilute, contains more lactose, and moves milk through too quickly, producing green and often explosive stools.</li>
+            <li>A one-off is nothing to worry about. If weight gain is slow and stools are consistently green, feed him long enough on one breast to reach the fatty hind milk.</li>
+            <li>You could also check with a breastfeeding counsellor that he's latching on correctly.</li>
+            <li>Occasionally green stools indicate a gut infection.</li>
+          </ul>
+          <div class="info-box amber">
+            <strong>⚠ Contact your GP if stools are</strong>
+            A creamy white colour, or black or red, as this indicates blood in his stools.
+          </div>
+        `
+      },
+      {
+        icon: '🌱', title: "Washing & Development", subtitle: "Trembles, slings, and things worth looking at",
+        content: `
+          <div class="section-label">Trembling after a bath</div>
+          <div class="info-box green">
+            <strong>Nothing to worry about</strong>
+            Your baby may tremble when he gets cool after a bath or when undressed. A quivering chin and jittery arms and legs are just a sign his nervous system is still underdeveloped. It will stop over the next month or two.
+          </div>
+          <div class="section-label">Head control & carriers</div>
+          <ul>
+            <li>He has reasonable head control now and has lost the floppy fragility of the early days.</li>
+            <li><strong>Sling:</strong> don't turn him outwards to face the world yet. Wait until three months. He still lacks enough head control, is happier curled towards you, and his vision isn't developed enough to enjoy looking around.</li>
+            <li><strong>Backpack-style carrier:</strong> not until at least six to eight months, depending on head control.</li>
+          </ul>
+          <div class="section-label">Things he'll enjoy looking at</div>
+          <ul>
+            <li>Faces, especially yours, are still the most interesting thing to him.</li>
+            <li>He'll also start to appreciate black-and-white photos of faces, chessboards, moving leaves, broad stripes and ceiling fans.</li>
+            <li>Ideas from the book: his Moses basket under a tree on a warm day, a chessboard by the changing table, or a black-and-white book at playtime. He loves symmetrical patterns as they appear to swim before his eyes.</li>
+          </ul>
+          <div class="info-box warm" style="text-align:center;font-style:italic;font-size:14px;margin-top:16px;">
+            It doesn't take much to entertain your baby at this age. You made it through Week 7 🎉
+          </div>
+        `
+      }
+
+];
+
+let current = 0;
+const total = cards.length;
+
+function renderCard() {
+  const card = cards[current];
+  const el = document.getElementById('card');
+  el.style.animation = 'none'; el.offsetHeight; el.style.animation = '';
+  el.innerHTML = `
+    <div class="card-header">
+      <div class="card-icon">${card.icon}</div>
+      <div class="card-header-text">
+        <div class="card-title">${card.title}</div>
+        <div class="card-subtitle">${card.subtitle}</div>
+      </div>
+    </div>
+    <div class="card-body">${card.content}</div>
+  `;
+  document.getElementById('counter').textContent = `Card ${current + 1} of ${total}`;
+  document.getElementById('progressBar').style.width = `${((current + 1) / total) * 100}%`;
+  document.getElementById('prevBtn').disabled = current === 0;
+  document.getElementById('nextBtn').disabled = current === total - 1;
+  document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === current));
+  document.getElementById('counter').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function navigate(dir) {
+  current = Math.max(0, Math.min(total - 1, current + dir));
+  renderCard();
+}
+
+const dotsEl = document.getElementById('dots');
+cards.forEach((_, i) => {
+  const dot = document.createElement('button');
+  dot.className = 'dot' + (i === 0 ? ' active' : '');
+  dot.setAttribute('aria-label', `Card ${i + 1}`);
+  dot.onclick = () => { current = i; renderCard(); };
+  dotsEl.appendChild(dot);
+});
+
+renderCard();
+</script>
+</body>
+</html>
