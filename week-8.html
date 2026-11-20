@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 8 — Peek-a-Week 🍼</title>
+<style>
+  :root {
+    --cream: #FDF6EE;
+    --card-bg: #FFFCF8;
+    --warm-brown: #5C3D2E;
+    --muted: #8C7060;
+    --accent: #C4704A;
+    --accent-light: #F0D9CC;
+    --accent-pale: #FAF0EA;
+    --border: #EAD9CC;
+    --shadow: rgba(92,61,46,0.08);
+    --green: #5A7A5A;
+    --green-pale: #EBF2EB;
+    --blue: #4A6A8A;
+    --blue-pale: #E8F0F7;
+    --gold: #A07A3A;
+    --gold-pale: #F5EDD8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--cream);
+    font-family: Georgia, 'Times New Roman', serif;
+    color: var(--warm-brown);
+    min-height: 100vh;
+  }
+
+  .header {
+    background: var(--warm-brown);
+    background-image: radial-gradient(ellipse at 70% 50%, rgba(196,112,74,0.3) 0%, transparent 70%);
+    padding: 52px 24px 44px;
+    text-align: center;
+    color: var(--cream);
+  }
+  .header .week-label {
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent-light); margin-bottom: 12px;
+  }
+  .header h1 {
+    font-size: clamp(26px, 5vw, 40px); font-weight: normal;
+    letter-spacing: -0.01em; color: #FDF6EE; margin-bottom: 10px;
+  }
+  .header .subtitle {
+    font-style: italic; font-size: 15px;
+    color: rgba(253,246,238,0.6); max-width: 400px; margin: 0 auto;
+  }
+  .back-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--accent-light); text-decoration: none; padding: 14px 24px 0;
+  }
+  .back-link:hover { color: white; }
+
+  .counter {
+    text-align: center; font-size: 11px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--accent); padding: 28px 24px 10px;
+    scroll-margin-top: 16px;
+  }
+  .progress-wrap {
+    max-width: min(560px, 94%); margin: 0 auto 24px;
+    height: 3px; background: var(--border); border-radius: 2px; overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.35s ease;
+  }
+
+  .card-wrap { display: flex; justify-content: center; padding: 0 24px; }
+  .card {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 18px; box-shadow: 0 4px 28px var(--shadow);
+    width: min(560px, 100%); overflow: hidden; animation: slideIn 0.3s ease both;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-header {
+    padding: 26px 28px 20px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: flex-start; gap: 16px;
+  }
+  .card-icon {
+    font-size: 22px; background: var(--accent-pale); border-radius: 12px;
+    padding: 10px 12px; line-height: 1; flex-shrink: 0;
+  }
+  .card-title { font-size: 19px; font-weight: bold; color: var(--warm-brown); margin-bottom: 3px; line-height: 1.2; }
+  .card-subtitle { font-style: italic; font-size: 13px; color: var(--muted); line-height: 1.4; }
+  .card-body { padding: 24px 28px 28px; }
+
+  .stat-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+  .stat-pill {
+    background: var(--accent-pale); border: 1px solid var(--accent-light);
+    border-radius: 20px; padding: 6px 14px; font-size: 13px; color: var(--warm-brown);
+  }
+  .stat-pill strong { color: var(--accent); }
+
+  ul { list-style: none; padding: 0; }
+  ul li {
+    padding: 10px 0 10px 20px; position: relative;
+    font-size: 14px; line-height: 1.65; border-bottom: 1px solid var(--border);
+    color: var(--warm-brown);
+  }
+  ul li:last-child { border-bottom: none; }
+  ul li::before {
+    content: '·'; position: absolute; left: 4px;
+    color: var(--accent); font-size: 18px; line-height: 1.4;
+  }
+
+  ol.steps { list-style: none; padding: 0; counter-reset: steps; }
+  ol.steps li {
+    padding: 10px 0 10px 42px; position: relative; font-size: 14px;
+    line-height: 1.65; border-bottom: 1px solid var(--border); counter-increment: steps;
+  }
+  ol.steps li:last-child { border-bottom: none; }
+  ol.steps li::before {
+    content: counter(steps); position: absolute; left: 0; top: 10px;
+    width: 26px; height: 26px; background: var(--accent); color: white;
+    border-radius: 50%; font-size: 12px; display: flex;
+    align-items: center; justify-content: center; font-family: Georgia, serif;
+  }
+
+  .info-box { border-radius: 10px; padding: 14px 16px; font-size: 13.5px; line-height: 1.6; margin-top: 14px; }
+  .info-box strong { display: block; margin-bottom: 4px; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; }
+  .info-box.warm  { background: var(--accent-pale); border: 1px solid var(--accent-light); color: var(--warm-brown); }
+  .info-box.warm strong { color: var(--accent); }
+  .info-box.green { background: var(--green-pale); border: 1px solid #C2D9C2; color: #2E4A2E; }
+  .info-box.green strong { color: var(--green); }
+  .info-box.blue  { background: var(--blue-pale); border: 1px solid #C0D0DF; color: #1E3045; }
+  .info-box.blue strong { color: var(--blue); }
+  .info-box.amber { background: var(--gold-pale); border: 1px solid #DEC89A; color: #4A3010; }
+  .info-box.amber strong { color: var(--gold); }
+
+  .section-label {
+    font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--muted); margin: 18px 0 10px;
+  }
+  .section-label:first-child { margin-top: 0; }
+
+  .diff-row { display: flex; gap: 10px; margin-top: 14px; margin-bottom: 14px; }
+  .diff-col { flex: 1; border-radius: 10px; padding: 12px 14px; font-size: 13px; line-height: 1.55; }
+  .diff-col.left  { background: var(--blue-pale); border: 1px solid #C0D0DF; color: #1E3045; }
+  .diff-col.right { background: var(--gold-pale); border: 1px solid #DEC89A; color: #4A3010; }
+  .diff-col strong { display: block; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
+  .diff-col.left strong { color: var(--blue); }
+  .diff-col.right strong { color: var(--gold); }
+
+  .nav {
+    display: flex; justify-content: center; align-items: center;
+    gap: 12px; padding: 24px 24px 10px;
+  }
+  .btn {
+    font-family: Georgia, serif; font-size: 14px; padding: 10px 28px;
+    border-radius: 24px; cursor: pointer; transition: all 0.18s ease; border: 1.5px solid var(--accent);
+  }
+  .btn-prev { background: transparent; color: var(--accent); }
+  .btn-prev:hover:not(:disabled) { background: var(--accent); color: white; transform: translateY(-1px); }
+  .btn-next { background: var(--accent); color: white; }
+  .btn-next:hover:not(:disabled) { background: #A85A38; transform: translateY(-1px); }
+  .btn:disabled { opacity: 0.3; cursor: default; transform: none; }
+
+  .dots { display: flex; justify-content: center; gap: 7px; padding: 12px 24px 32px; flex-wrap: wrap; }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--border);
+    cursor: pointer; transition: all 0.2s ease; border: none; padding: 0;
+  }
+  .dot.active { background: var(--accent); transform: scale(1.3); }
+
+  footer {
+    text-align: center; font-style: italic; font-size: 11px;
+    color: var(--muted); padding: 0 24px 36px;
+  }
+
+  @media (max-width: 500px) {
+    .card-header { padding: 20px 18px 16px; }
+    .card-body { padding: 18px 18px 22px; }
+    .btn { padding: 9px 20px; font-size: 13px; }
+    .diff-row { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a class="back-link" href="index.html">← All weeks</a>
+  <div class="week-label">Week 8</div>
+  <h1>First Jabs</h1>
+  <p class="subtitle">Immunisations, learning to self-soothe, and the first &#39;goo&#39; and &#39;gaa&#39;</p>
+</div>
+
+<div class="counter" id="counter">Card 1 of 7</div>
+<div class="progress-wrap"><div class="progress-bar" id="progressBar" style="width:14.28%"></div></div>
+
+<div class="card-wrap"><div class="card" id="card"></div></div>
+
+<div class="nav">
+  <button class="btn btn-prev" id="prevBtn" onclick="navigate(-1)" disabled>← Prev</button>
+  <button class="btn btn-next" id="nextBtn" onclick="navigate(1)">Next →</button>
+</div>
+<div class="dots" id="dots"></div>
+
+<footer><em>Source: Your Baby Week by Week</em> — all content sourced directly from the book</footer>
+
+<script>
+const cards = [
+      {
+        icon: '💉', title: "The 8-Week Immunisations", subtitle: "What's given, what comes next, and how to handle the day",
+        content: `
+          <ul>
+            <li>Your baby should hopefully be booked in for his immunisations this week. It's normal to worry about whether the vaccines are safe and how he'll cope with injections.</li>
+            <li>The first year of the vaccination programme isn't particularly controversial, and pretty much all babies are immunised around this age.</li>
+          </ul>
+          <div class="stat-row">
+            <div class="stat-pill">Injections: <strong>3, into the thighs</strong></div>
+            <div class="stat-pill">Oral: <strong>rotavirus</strong></div>
+          </div>
+          <div class="section-label">What's given at 8 weeks</div>
+          <ul>
+            <li><strong>Six-in-one jab:</strong> protects against diphtheria, tetanus, whooping cough, polio, hepatitis B and Hib (an infection that can cause pneumonia and a particular strain of meningitis).</li>
+            <li><strong>Pneumococcal jab:</strong> pneumococcal infection can cause meningitis, pneumonia, septicaemia and ear infections.</li>
+            <li><strong>Meningitis B jab:</strong> meningitis B causes more than nine in every 10 meningitis infections in babies.</li>
+            <li><strong>Rotavirus vaccine:</strong> a liquid squirted into his mouth. Rotavirus is a common cause of diarrhoea and sickness in babies and young children.</li>
+          </ul>
+          <div class="section-label">What comes next</div>
+          <ul>
+            <li><strong>3 months:</strong> booster six-in-one jab and booster rotavirus vaccine.</li>
+            <li><strong>4 months:</strong> three jabs: the third and final six-in-one booster, another pneumococcal jab and another meningitis B jab.</li>
+            <li><strong>12 months:</strong> final pneumococcal booster and meningitis B booster, a Hib/meningitis C jab and the MMR (measles, mumps and rubella) vaccine. No more jabs between 4 and 12 months.</li>
+          </ul>
+          <div class="info-box blue">
+            <strong>Why now</strong>
+            The jabs protect your baby against a long list of dangerous diseases at just about the time his immunity is starting to decline. All babies are born with quite a lot of immunity from their mums while in the womb, and breastfed babies are also protected from common diseases in the environment. The book points to the NHS Choices website for the full schedule.
+          </div>
+          <div class="section-label">Safety &amp; side effects</div>
+          <div class="info-box green">
+            <strong>Past scares are no longer an issue</strong>
+            The new vaccines no longer use the mercury-based preservative thiomersal, and scientific studies have found current vaccines don't overload a baby's immune system. It's important that babies have all of the recommended vaccines.
+          </div>
+          <ul>
+            <li><strong>Six-in-one:</strong> well researched and found to be safe. It's inactivated, not live, so there's no risk of your baby getting the diseases. Very unlikely to cause side effects other than some redness, swelling and a bump at the injection site for a little while. He may also seem a bit irritable.</li>
+            <li><strong>Rotavirus:</strong> very safe. Most babies have no reaction, some become a little irritable and restless, and a few may have slight diarrhoea for a few days.</li>
+            <li><strong>Meningitis B:</strong> introduced in 2015, with the UK the first country to add it to its childhood programme. Almost one million doses given with no safety concerns. Side effects are mild and don't last long.</li>
+          </ul>
+          <div class="section-label">On the day</div>
+          <ul>
+            <li>Most two-month-olds barely notice the first thigh being injected, but often get upset when the second is jabbed a couple of minutes later, probably because they cotton on to what's happening.</li>
+            <li>If you breastfeed, try feeding him while he's being vaccinated, as this can sometimes help. Otherwise give him a big cuddle afterwards and he'll calm down within seconds.</li>
+          </ul>
+          <div class="info-box amber">
+            <strong>When to postpone</strong>
+            If your baby has a fever, postpone the appointment for another week. The nurse won't mind, and probably wouldn't vaccinate anyway: he could end up feeling quite unwell, and the vaccine won't be as effective because his immune system is already working hard. A cold with no fever is fine. If your baby has ever had any sort of fit, tell the GP or nurse giving the injection.
+          </div>
+          <div class="info-box warm">
+            <strong>Afterwards</strong>
+            He'll probably feel unwell for a day or so, then be absolutely fine. After the meningitis B vaccine he's likely to have a fever within the first 24 hours. You can give him baby paracetamol (such as Calpol) straight after his vaccination to treat this.
+          </div>
+        `
+      },
+      {
+        icon: '😴', title: "Sleep, Self-Soothing & the Pre-Sleep Grizzle", subtitle: "Teaching him to drift off by himself",
+        content: `
+          <div class="stat-row">
+            <div class="stat-pill">Total sleep: <strong>14–17 hours/day</strong></div>
+            <div class="stat-pill">Crying: <strong>40 min–4 hours/day</strong></div>
+          </div>
+          <ul>
+            <li><strong>Pattern:</strong> sleeps more at night than during the day. Aim for at least five hours of uninterrupted sleep at night, plus daytime naps that total at least three hours.</li>
+            <li>Half of all babies now sleep for five hours or more at night. If yours does, congratulations: a lot of parents are still getting by on no more than three hours of unbroken sleep.</li>
+            <li>If not, take heart: 70 in every 100 three-month-olds go for at least five hours at night. Meanwhile, revisit the golden rule of sleep training: put your baby down awake.</li>
+          </ul>
+          <div class="info-box blue">
+            <strong>Why self-soothing matters</strong>
+            Babies, like adults, drift in and out of sleep and wake several times a night. Your job is to teach him to drift back off by himself, so eventually he doesn't need rocking or even feeding. The more practice he gets now, the easier things will be in a couple of months when you're teaching him to sleep through. Allow time each day for it, even if it feels like he's not making progress.
+          </div>
+          <div class="section-label">If self-soothing isn't working yet</div>
+          <ul>
+            <li><strong>He falls asleep during feeds.</strong> Very common, and it needs resolving in the next few weeks before he becomes set in his ways (generally after three months). Once you're sure he's had enough milk and is just hanging on for comfort, gently pull the teat or nipple away. If he becomes alert and complains, give it back and try again next time. It may take many tries.</li>
+            <li><strong>You're putting him down too alert.</strong> Wait until he's dopey and relaxed before putting him in his cot. It may feel like cheating, but he's learning a difficult skill and needs all the help you can give him.</li>
+            <li><strong>You aren't giving him enough time.</strong> It can take a few minutes to settle. A bit of grizzling and moaning can be a sign he's about to nod off, so don't be too hasty to pick him up. If you're sure it's not going to work, pick him up and start again.</li>
+          </ul>
+          <div class="info-box amber">
+            <strong>When to forget sleep training</strong>
+            If he's ill, overtired, has wind, or has just drifted off and the phone wakes him, he'll be upset. A bit of help (the rocking technique you've perfected) could save you both a lot of anguish. Over the next few months, aim to minimise the help you give and maximise the number of times he gets to sleep by himself.
+          </div>
+          <div class="section-label">The pre-sleep grizzle</div>
+          <ul>
+            <li>Your baby will continue to cry less this week, and now it's time to start thinking about when it's okay to let him cry.</li>
+            <li>For some unknown reason, it's very common for babies to cry a bit before they go off to sleep. Listen carefully so you start to recognise this grizzle, and you won't rush to 'help' when he's about to drop off.</li>
+            <li>Over the next few months, when he wakes in the night not needing food but just a few moments to re-settle, you'll know not to rush in.</li>
+          </ul>
+          <div class="info-box warm">
+            <strong>Grizzle, not howl</strong>
+            Don't let his cry become a distressed howl. He's still too young to cry himself to sleep, but a bit of gentle grizzling is fine.
+          </div>
+        `
+      },
+      {
+        icon: '🍼', title: "Feeding & Milk Allergy", subtitle: "Why it's suspected often but rarely the cause",
+        content: `
+          <div class="stat-row">
+            <div class="stat-pill">Daily total: <strong>720–960 ml (25–33 oz)</strong></div>
+            <div class="stat-pill">Per feed: <strong>up to 180 ml (6 oz)</strong></div>
+            <div class="stat-pill">Feeds: <strong>6–9 a day</strong></div>
+          </div>
+          <ul>
+            <li>By now you're better at recognising if your baby feels uncomfortable after a feed.</li>
+            <li>It's very common for parents to suspect milk allergy at about two months, but it rarely turns out to be the case.</li>
+          </ul>
+          <div class="diff-row">
+            <div class="diff-col left">
+              <strong>Cow's milk allergy</strong>
+              Affects up to seven in every 100 babies, most developing symptoms by six months. More common in bottle-fed babies. He'll probably grow out of it by one, and nearly all babies do by two.
+            </div>
+            <div class="diff-col right">
+              <strong>Lactose intolerance</strong>
+              When a baby can't digest lactose (milk sugar). Rare under six years, as all babies have the enzyme to break it down. It can occur temporarily after gastroenteritis, with stomach cramps, wind and even frothy poos for a couple of weeks while his gut learns to cope again.
+            </div>
+          </div>
+          <div class="info-box amber">
+            <strong>Signs of a true milk allergy</strong>
+            It's quite dramatic: sick several times a day, watery poos (perhaps bloodstained) and poor weight gain. He may also get eczema or a rash, and a runny nose. More likely if you or his dad have milk allergy or any other allergy, including being atopic (eczema, asthma or hay fever).
+          </div>
+          <ul>
+            <li>Babies often cry for unspecific reasons and you'll probably never know why.</li>
+            <li>Don't give a special hypoallergenic formula unnecessarily, or without medical supervision.</li>
+          </ul>
+          <div class="section-label">If you're breastfeeding</div>
+          <ul>
+            <li>Only a particularly sensitive baby would be affected by cow's milk protein in your breast milk, so it's unlikely you need to cut out dairy.</li>
+            <li>Don't cut it out unnecessarily: pregnancy will have left your calcium stores depleted and you should be eating more calcium-rich foods than ever.</li>
+            <li>If you do go ahead, do it for two weeks. If there's an underlying problem you'll see a noticeable improvement. If not, he's not allergic and you can have dairy again.</li>
+            <li>If you suspect a problem with dairy, speak to your health visitor or GP, as it will affect him when he starts on solids.</li>
+          </ul>
+          <div class="section-label">If you're bottle-feeding</div>
+          <ul>
+            <li>If your GP confirms lactose intolerance or milk allergy, changing formula is a quick-fix solution. There's a formula called hydrolysate, available on prescription only.</li>
+            <li>If symptoms disappear, you'll probably be advised, under your GP's supervision, to reintroduce cow's milk-based formula. If symptoms reappear, you can be pretty sure of the diagnosis.</li>
+          </ul>
+        `
+      },
+      {
+        icon: '🩹', title: "Nappies", subtitle: "Loose is normal, true diarrhoea is not",
+        content: `
+          <div class="stat-row">
+            <div class="stat-pill">Wet nappies: <strong>4–8 per 24 hrs</strong></div>
+            <div class="stat-pill">Dirty nappies: <strong>0–5 per 24 hrs</strong></div>
+          </div>
+          <ul>
+            <li>His stools may be on the loose side, possibly bordering on looking like diarrhoea. Runny stools are normal for babies, particularly breastfed ones.</li>
+            <li>True diarrhoea needs treating quickly to prevent dehydration.</li>
+          </ul>
+          <div class="info-box green">
+            <strong>When not to worry</strong>
+            The occasional explosive nappy that leaks up his back isn't a worry, unless he seems unwell or has a fever. In a breastfed baby it can come from drinking too much lactose-rich fore milk, which is dilute and moves things along too fast. Try waiting longer for him to finish one breast: think one breast per feed, and only swap if he's definitely still hungry.
+          </div>
+          <div class="info-box amber">
+            <strong>When to worry</strong>
+            Stools that are noticeably looser, excessive in amount, explosive, much smellier, more watery and more frequent indicate diarrhoea. The big danger is dehydration, so feed him more frequently than usual and see your health visitor or GP within 24 hours if symptoms continue.
+          </div>
+        `
+      },
+      {
+        icon: '🛁', title: "The Big Bath", subtitle: "Time to graduate from the baby bath",
+        content: `
+          <ul>
+            <li>You can put your baby into the big bath this week, if you haven't already.</li>
+            <li>He may be getting quite big for his baby bath and wriggling so much he's making quite a splash.</li>
+          </ul>
+          <div class="info-box amber">
+            <strong>Bath on a stand?</strong>
+            If you've had the small bath on a bath stand, it's definitely time to move it to the floor in case it topples over.
+          </div>
+          <div class="info-box warm">
+            <strong>Worth getting</strong>
+            A rubber bathmat for the big bath to stop him slipping, and even a baby bath seat or a support shaped like a deckchair, which makes hair washing a lot easier.
+          </div>
+        `
+      },
+      {
+        icon: '🌱', title: "Development & Play", subtitle: "First consonants and purposeful grasping",
+        content: `
+          <div class="section-label">Talking</div>
+          <ul>
+            <li>He may start to make consonant sounds this week, so listen out for 'goo', 'gaa', 'coo' and so on.</li>
+            <li>Copy his sounds and he'll 'talk' back to you.</li>
+          </ul>
+          <div class="section-label">Hands</div>
+          <ul>
+            <li>He'll open his hand more often as he loses his grasp reflex.</li>
+            <li>Instead of clutching at anything put in his fist, he'll grasp for objects more purposefully for a few seconds, and begin to reach out and slap at things in front of him.</li>
+          </ul>
+          <div class="info-box warm">
+            <strong>Play idea</strong>
+            Lie him under a baby gym, or put a string of beads or toys above his cot or pram that he can enjoy trying to bash.
+          </div>
+          <div class="info-box amber">
+            <strong>Not smiling at all yet?</strong>
+            See your GP. It's possible he has a developmental problem, or a problem with his vision that means he's not responding to faces.
+          </div>
+          <div class="info-box warm" style="text-align:center;font-style:italic;font-size:14px;margin-top:16px;">
+            You made it through Week 8 🎉
+          </div>
+        `
+      }
+
+];
+
+let current = 0;
+const total = cards.length;
+
+function renderCard() {
+  const card = cards[current];
+  const el = document.getElementById('card');
+  el.style.animation = 'none'; el.offsetHeight; el.style.animation = '';
+  el.innerHTML = `
+    <div class="card-header">
+      <div class="card-icon">${card.icon}</div>
+      <div class="card-header-text">
+        <div class="card-title">${card.title}</div>
+        <div class="card-subtitle">${card.subtitle}</div>
+      </div>
+    </div>
+    <div class="card-body">${card.content}</div>
+  `;
+  document.getElementById('counter').textContent = `Card ${current + 1} of ${total}`;
+  document.getElementById('progressBar').style.width = `${((current + 1) / total) * 100}%`;
+  document.getElementById('prevBtn').disabled = current === 0;
+  document.getElementById('nextBtn').disabled = current === total - 1;
+  document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === current));
+  document.getElementById('counter').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function navigate(dir) {
+  current = Math.max(0, Math.min(total - 1, current + dir));
+  renderCard();
+}
+
+const dotsEl = document.getElementById('dots');
+cards.forEach((_, i) => {
+  const dot = document.createElement('button');
+  dot.className = 'dot' + (i === 0 ? ' active' : '');
+  dot.setAttribute('aria-label', `Card ${i + 1}`);
+  dot.onclick = () => { current = i; renderCard(); };
+  dotsEl.appendChild(dot);
+});
+
+renderCard();
+</script>
+</body>
+</html>
